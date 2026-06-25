@@ -9,8 +9,8 @@ A personal restaurant and cafe memory diary app built with Flutter. Explore cafe
 ## Screenshots
 
 ### Home Screen
-![Home Screen1](screenshots/home_screen_01.png)
-![Home Screen2](screenshots/home_screen_02.png)
+![Home Screen 1](screenshots/home_screen_01.png)
+![Home Screen 2](screenshots/home_screen_02.png)
 
 ### Cafe Detail Screen
 ![Cafe Detail](screenshots/cafe_detail.png)
@@ -19,10 +19,10 @@ A personal restaurant and cafe memory diary app built with Flutter. Explore cafe
 ![Log Memory](screenshots/log_memory.png)
 
 ### Timeline Screen
-![Timeline](screenshots/timeline.png)
+![Timeline](screenshots/user_timeline.png)
 
 ### Profile Screen
-![Profile](screenshots/profile.png)
+![Profile](screenshots/user_profile.png)
 
 ---
 
