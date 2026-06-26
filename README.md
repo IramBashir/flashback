@@ -35,7 +35,7 @@ A personal restaurant and cafe memory diary app built with Flutter. Explore cafe
 - **Cafe Detail** — Full cafe profile with hero image, tags, location, timings, about section, and food memories grid
 - **Log Memory** — Upload a photo, enter item name, price, star rating (1–5), and personal notes
 - **Timeline** — Chronological feed of all saved memories grouped by month
-- **Google Maps** — Map view with custom cafe markers and bottom sheet on tap *(in progress)*
+- **Map View** — Interactive OpenStreetMap with custom cafe markers and bottom sheet on tap
 - **Profile** — User stats (cafes visited, items logged, avg rating), favorite dishes, and settings
 - **Firebase Backend** — Firestore for data, Firebase Storage for photos, Firebase Auth for login *(in progress)*
 - **Offline Support** — Firestore local caching so app works without internet
@@ -49,33 +49,32 @@ A personal restaurant and cafe memory diary app built with Flutter. Explore cafe
 | Framework | Flutter (Dart) |
 | State Management | Provider |
 | Backend | Firebase (Firestore, Auth, Storage) |
-| Maps | Google Maps Flutter |
+| Maps | flutter_map + OpenStreetMap (no API key required) |
 | Design | Figma |
 | Version Control | Git / GitHub |
 
 ---
-
 ## Project Structure
-
+ 
 ```
 lib/
-├── main.dart                  # App entry point
+├── main.dart                   # App entry point
 ├── models/
-│   └── cafe.dart              # CafeData & FoodMemory models
+│   └── cafe.dart               # CafeData & FoodMemory models
 ├── data/
-│   └── dummy_data.dart        # Static data (Firebase replacement coming)
+│   └── dummy_data.dart         # Static data (Firebase replacement coming)
 ├── screens/
-│   ├── home_screen.dart       # Explore cafes
+│   ├── home_screen.dart        # Explore cafes
 │   ├── cafe_detail_screen.dart # Cafe profile + memories
 │   ├── log_memory_screen.dart  # Add a new memory
 │   ├── timeline_screen.dart    # All memories chronologically
-│   ├── map_screen.dart         # Google Maps view (in progress)
-│   └── profile_screen.dart    # User profile & settings
+│   ├── map_screen.dart         # OpenStreetMap view with cafe markers
+│   └── profile_screen.dart     # User profile & settings
 └── widgets/
     ├── featured_card.dart      # Horizontal scroll cafe card
     └── cafe_list_card.dart     # Vertical list cafe card
 ```
-
+ 
 ---
 
 ## Getting Started
@@ -84,8 +83,7 @@ lib/
 
 - Flutter SDK 3.x — [Install Flutter](https://docs.flutter.dev/get-started/install)
 - Android Studio (for emulator) or a physical Android device
-- Google Maps API key
-- Firebase project
+- Firebase project *(for backend features)*
 
 ### Run Locally
 
@@ -109,12 +107,13 @@ flutter run
 1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
 2. Enable Firestore, Authentication, and Storage
 3. Download `google-services.json` and place in `android/app/`
-4. Add your Google Maps API key in `android/app/src/main/AndroidManifest.xml`
 
+> Note: Map view uses OpenStreetMap via flutter_map — no API key required.
 ---
 
-## Current Status
 
+## Current Status
+ 
 | Feature | Status |
 |---------|--------|
 | Home Screen UI | ✅ Complete |
@@ -122,9 +121,10 @@ flutter run
 | Log Memory Form | ✅ Complete |
 | Timeline Screen | ✅ Complete |
 | Profile Screen | ✅ Complete |
-| Google Maps Integration | 🔄 In Progress |
-| Firebase Backend | 🔄 In Progress |
+| Map View (OpenStreetMap) | ✅ Complete |
+| Bottom Nav (all screens) | 🔄 In Progress |
 | Image Picker (Camera/Gallery) | 🔄 In Progress |
+| Firebase Backend | 🔄 In Progress |
 | Friends Sharing | 📋 Planned |
 | App Store Deployment | 📋 Planned |
 
