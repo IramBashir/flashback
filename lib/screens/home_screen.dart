@@ -4,6 +4,7 @@ import '../widgets/featured_card.dart';
 import '../widgets/cafe_list_card.dart';
 import 'timeline_screen.dart';
 import 'profile_screen.dart';
+import 'map_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -182,11 +183,17 @@ class _HomeScreenState extends State<HomeScreen> {
           selectedItemColor: Colors.white,
           unselectedItemColor: Colors.white38,
           elevation: 0,
+          currentIndex: 0,
           onTap: (index) {
             if (index == 1) {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const TimelineScreen()),
+              );
+            } else if (index == 3) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MapScreen()),
               );
             } else if (index == 4) {
               Navigator.push(

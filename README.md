@@ -24,6 +24,9 @@ A personal restaurant and cafe memory diary app built with Flutter. Explore cafe
 ### Profile Screen
 ![Profile](screenshots/user_profile.png)
 
+### Cafe Map
+![Cafes on Map](screenshots/cafe_map.png)
+
 ---
 
 ## Features
