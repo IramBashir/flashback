@@ -8,6 +8,15 @@ A personal restaurant and cafe memory diary app built with Flutter. Explore cafe
 
 ## Screenshots
 
+### Onboarding Screen
+![Onboarding](screenshots/onboarding.png)
+
+### Get Started Screen  
+![Get Started](screenshots/get_started.png)
+
+### Create Account Screen
+![Create Account](screenshots/create_account.png)
+
 ### Home Screen
 ![Home Screen 1](screenshots/home_screen_01.png)
 ![Home Screen 2](screenshots/home_screen_02.png)
@@ -27,10 +36,14 @@ A personal restaurant and cafe memory diary app built with Flutter. Explore cafe
 ### Cafe Map
 ![Cafes on Map](screenshots/cafe_map.png)
 
+
+
 ---
 
 ## Features
 
+- **Onboarding** — 3-screen intro flow with swipeable pages and animated dot indicators
+- **Authentication** — Email/password login and signup via Firebase Auth
 - **Explore** — Browse nearby cafes and restaurants with horizontal featured cards and filter chips
 - **Cafe Detail** — Full cafe profile with hero image, tags, location, timings, about section, and food memories grid
 - **Log Memory** — Upload a photo, enter item name, price, star rating (1–5), and personal notes
@@ -64,6 +77,8 @@ lib/
 ├── data/
 │   └── dummy_data.dart         # Static data (Firebase replacement coming)
 ├── screens/
+│   ├── onboarding_screen.dart  # 3-screen intro flow
+│   ├── auth_screen.dart        # Login & signup
 │   ├── home_screen.dart        # Explore cafes
 │   ├── cafe_detail_screen.dart # Cafe profile + memories
 │   ├── log_memory_screen.dart  # Add a new memory
@@ -122,11 +137,13 @@ flutter run
 | Timeline Screen | ✅ Complete |
 | Profile Screen | ✅ Complete |
 | Map View (OpenStreetMap) | ✅ Complete |
-| Bottom Nav (all screens) | 🔄 In Progress |
-| Image Picker (Camera/Gallery) | 🔄 In Progress |
-| Firebase Backend | 🔄 In Progress |
 | Friends Sharing | 📋 Planned |
 | App Store Deployment | 📋 Planned |
+| Onboarding Flow | ✅ Complete |
+| Firebase Auth (Login/Signup) | ✅ Complete |
+| Bottom Nav (all screens) | ✅ Complete |
+| Image Picker (Camera/Gallery) | ✅ Complete |
+| Firebase Backend (Firestore) | 🔄 In Progress |
 
 ---
 
