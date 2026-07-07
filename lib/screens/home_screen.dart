@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import '../data/dummy_data.dart';
 import '../widgets/featured_card.dart';
 import '../widgets/cafe_list_card.dart';
-import 'timeline_screen.dart';
-import 'profile_screen.dart';
-import 'map_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF111111),
+      backgroundColor: const Color(0xFFF5F0E8), // cream background
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -36,14 +33,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            color: Color(0xFF2D2D2D), // dark
                             letterSpacing: -0.5,
                           ),
                         ),
                         SizedBox(width: 4),
                         Icon(
                           Icons.keyboard_arrow_down,
-                          color: Colors.white70,
+                          color: Color(0xFF2D2D2D), // dark
                           size: 20,
                         ),
                       ],
@@ -54,9 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2A2A2A),
+                        color: const Color(0xFFEEE8E0), // light cream pill
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFF3A3A3A)),
+                        border: Border.all(color: const Color(0xFFDDD5C8)),
                       ),
                       child: Row(
                         children: [
@@ -72,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Text(
                             'Islamabad',
                             style: TextStyle(
-                              color: Colors.white70,
+                              color: Color(0xFF6B6055), // medium brown
                               fontSize: 12,
                             ),
                           ),
@@ -91,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Color(0xFF2D2D2D), // dark
                     height: 1.2,
                   ),
                 ),
@@ -129,19 +126,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Colors.white
-                              : const Color(0xFF2A2A2A),
+                              ? const Color(0xFF4A5240) // selected — dark olive
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: isSelected
-                                ? Colors.white
-                                : const Color(0xFF3A3A3A),
+                                ? const Color(0xFF4A5240)
+                                : const Color(0xFFDDD5C8),
                           ),
                         ),
                         child: Text(
                           filters[index],
                           style: TextStyle(
-                            color: isSelected ? Colors.black : Colors.white70,
+                            color: isSelected
+                                ? Colors.white
+                                : const Color(0xFF6B6055),
                             fontSize: 13,
                             fontWeight: isSelected
                                 ? FontWeight.w600
@@ -164,64 +163,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }, childCount: cafes.length),
               ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Colors.white,
-        child: const Icon(Icons.add, color: Colors.black),
-      ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFF1A1A1A),
-          border: Border(top: BorderSide(color: Color(0xFF2A2A2A))),
-        ),
-        child: BottomNavigationBar(
-          backgroundColor: Colors.transparent,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.white38,
-          elevation: 0,
-          currentIndex: 0,
-          onTap: (index) {
-            if (index == 1) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const TimelineScreen()),
-              );
-            } else if (index == 3) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MapScreen()),
-              );
-            } else if (index == 4) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
-            }
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.explore_outlined),
-              label: 'Explore',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.timeline),
-              label: 'Timeline',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle_outline, size: 28),
-              label: 'Log',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map_outlined),
-              label: 'Map',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              label: 'Profile',
             ),
           ],
         ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/cafe.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class LogMemoryScreen extends StatefulWidget {
   final CafeData cafe;
@@ -12,6 +14,8 @@ class LogMemoryScreen extends StatefulWidget {
 class _LogMemoryScreenState extends State<LogMemoryScreen> {
   // State variables — form ka data yahan store hoga
   int selectedRating = 3;
+  XFile? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController notesController = TextEditingController();
@@ -19,6 +23,143 @@ class _LogMemoryScreenState extends State<LogMemoryScreen> {
   // Cleanup — controllers dispose karo jab screen band ho
   // React mein yeh useEffect cleanup jaisa hai
   @override
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? image = await _picker.pickImage(
+      source: source,
+      maxWidth: 1080,
+      maxHeight: 1080,
+      imageQuality: 85,
+    );
+    if (image != null) {
+      setState(() {
+        _selectedImage = image;
+      });
+    }
+  }
+
+  void _showImageSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFFF5F0E8),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDDD5C8),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Add Photo',
+                  style: TextStyle(
+                    color: Color(0xFF2D2D2D),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Camera option
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.camera);
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.camera_alt_outlined,
+                          color: Color(0xFF4A5240),
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Take Photo',
+                          style: TextStyle(
+                            color: Color(0xFF2D2D2D),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                // Gallery option
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.gallery);
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.photo_library_outlined,
+                          color: Color(0xFF4A5240),
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Choose from Gallery',
+                          style: TextStyle(
+                            color: Color(0xFF2D2D2D),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                // Cancel
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: const Text(
+                      'Cancel',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Color(0xFF8B7355), fontSize: 15),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void dispose() {
     nameController.dispose();
     priceController.dispose();
@@ -130,9 +271,7 @@ class _LogMemoryScreenState extends State<LogMemoryScreen> {
                     // Image upload area
                     Center(
                       child: GestureDetector(
-                        onTap: () {
-                          // Image picker baad mein add karenge
-                        },
+                        onTap: _showImageSourceDialog,
                         child: Container(
                           height: 180,
                           width: double.infinity,
@@ -140,23 +279,78 @@ class _LogMemoryScreenState extends State<LogMemoryScreen> {
                             color: const Color(0xFFE8E0D0),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.8),
-                                  shape: BoxShape.circle,
+                          clipBehavior: Clip.hardEdge,
+                          child: _selectedImage != null
+                              // Image selected — show karo
+                              ? Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    Image.file(
+                                      File(_selectedImage!.path),
+                                      fit: BoxFit.cover,
+                                    ),
+                                    // Change photo button
+                                    Positioned(
+                                      bottom: 10,
+                                      right: 10,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.5),
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: const Row(
+                                          children: [
+                                            Icon(
+                                              Icons.edit,
+                                              color: Colors.white,
+                                              size: 12,
+                                            ),
+                                            SizedBox(width: 4),
+                                            Text(
+                                              'Change',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 11,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              // No image — placeholder show karo
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(14),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.8),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.camera_alt_outlined,
+                                        color: Color(0xFF8B7355),
+                                        size: 28,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      'Tap to add photo',
+                                      style: TextStyle(
+                                        color: Color(0xFF8B7355),
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                child: const Icon(
-                                  Icons.camera_alt_outlined,
-                                  color: Color(0xFF8B7355),
-                                  size: 28,
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
                       ),
                     ),

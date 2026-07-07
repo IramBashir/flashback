@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "487391582232",
+    "project_id": "flashback-be4c6",
+    "storage_bucket": "flashback-be4c6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:487391582232:android:abac4d25f46764dee34b6d",
+        "android_client_info": {
+          "package_name": "com.example.flashback"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "487391582232-pg47q4soqt67p919ofsmdc9s0ir6d3jb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAowU_cYiRe22bYf2B1M-bbR2cSZlwvGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "487391582232-pg47q4soqt67p919ofsmdc9s0ir6d3jb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "487391582232-1fb087gtgvblabpieb9gt1uh0molrsas.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flashback"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

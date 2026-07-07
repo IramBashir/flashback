@@ -505,45 +505,45 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
 
-      // Bottom nav
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Color(0xFFEEE8E0))),
-        ),
-        child: BottomNavigationBar(
-          backgroundColor: Colors.transparent,
-          selectedItemColor: const Color(0xFF4A5240),
-          unselectedItemColor: const Color(0xFFBBB5AD),
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-          selectedFontSize: 10,
-          unselectedFontSize: 10,
-          currentIndex: 4, // Profile active
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.explore_outlined),
-              label: 'Explore',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.timeline),
-              label: 'Timeline',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle_outline, size: 28),
-              label: 'Log',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map_outlined),
-              label: 'Map',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              label: 'Profile',
-            ),
-          ],
-        ),
-      ),
+      // // Bottom nav
+      // bottomNavigationBar: Container(
+      //   decoration: const BoxDecoration(
+      //     color: Colors.white,
+      //     border: Border(top: BorderSide(color: Color(0xFFEEE8E0))),
+      //   ),
+      //   child: BottomNavigationBar(
+      //     backgroundColor: Colors.transparent,
+      //     selectedItemColor: const Color(0xFF4A5240),
+      //     unselectedItemColor: const Color(0xFFBBB5AD),
+      //     elevation: 0,
+      //     type: BottomNavigationBarType.fixed,
+      //     selectedFontSize: 10,
+      //     unselectedFontSize: 10,
+      //     currentIndex: 4, // Profile active
+      //     items: const [
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.explore_outlined),
+      //         label: 'Explore',
+      //       ),
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.timeline),
+      //         label: 'Timeline',
+      //       ),
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.add_circle_outline, size: 28),
+      //         label: 'Log',
+      //       ),
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.map_outlined),
+      //         label: 'Map',
+      //       ),
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.person_outline),
+      //         label: 'Profile',
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 }
