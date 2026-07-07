@@ -9,7 +9,7 @@ A personal restaurant and cafe memory diary app built with Flutter. Explore cafe
 ## Screenshots
 
 ### Onboarding Screen
-![Onboarding](screenshots/onboarding.png)
+![Onboarding](screenshots/onboarding_screen.png)
 
 ### Get Started Screen  
 ![Get Started](screenshots/get_started.png)
