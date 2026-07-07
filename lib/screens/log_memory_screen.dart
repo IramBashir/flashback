@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/cafe.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LogMemoryScreen extends StatefulWidget {
   final CafeData cafe;
@@ -15,6 +17,7 @@ class _LogMemoryScreenState extends State<LogMemoryScreen> {
   // State variables — form ka data yahan store hoga
   int selectedRating = 3;
   XFile? _selectedImage;
+  bool isLoading = false;
   final ImagePicker _picker = ImagePicker();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
@@ -167,8 +170,7 @@ class _LogMemoryScreenState extends State<LogMemoryScreen> {
     super.dispose();
   }
 
-  void _saveMemory() {
-    // Validation
+  Future<void> _saveMemory() async {
     if (nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -179,20 +181,45 @@ class _LogMemoryScreenState extends State<LogMemoryScreen> {
       return;
     }
 
-    // Abhi sirf print karte hain — Firebase baad mein
-    print('Memory saved: ${nameController.text}');
-    print('Price: ${priceController.text}');
-    print('Rating: $selectedRating');
-    print('Notes: ${notesController.text}');
+    setState(() => isLoading = true);
 
-    // Success message + back jao
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Memory saved!'),
-        backgroundColor: Color(0xFF4A5240),
-      ),
-    );
-    Navigator.pop(context);
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      final uid = user?.uid ?? 'anonymous';
+
+      // Firestore mein save karo
+      await FirebaseFirestore.instance.collection('memories').add({
+        'userId': uid,
+        'cafeName': widget.cafe.name,
+        'itemName': nameController.text.trim(),
+        'price': priceController.text.trim(),
+        'rating': selectedRating,
+        'notes': notesController.text.trim(),
+        'imagePath': _selectedImage?.path ?? '',
+        'createdAt': Timestamp.now(),
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Memory saved!'),
+            backgroundColor: Color(0xFF4A5240),
+          ),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error saving memory: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
   }
 
   @override
@@ -448,7 +475,7 @@ class _LogMemoryScreenState extends State<LogMemoryScreen> {
 
                     // Save Memory button
                     GestureDetector(
-                      onTap: _saveMemory,
+                      onTap: isLoading ? null : _saveMemory,
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -456,25 +483,36 @@ class _LogMemoryScreenState extends State<LogMemoryScreen> {
                           color: const Color(0xFF4A5240),
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.bookmark_outline,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Save Memory',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                        child: isLoading
+                            ? const Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              )
+                            : const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.bookmark_outline,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Save Memory',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
 

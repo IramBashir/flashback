@@ -1,71 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-// Temporary memory model — Firebase se replace hoga baad mein
+// Real memory model from Firestore
 class MemoryEntry {
+  final String id;
   final String itemName;
   final String cafeName;
   final String date;
-  final String monthYear; // grouping ke liye
-  final double rating;
-  final String imageColor;
-  final String? imagePath;
-  final IconData icon;
+  final String monthYear;
+  final int rating;
+  final String notes;
+  final String imagePath;
 
-  const MemoryEntry({
+  MemoryEntry({
+    required this.id,
     required this.itemName,
     required this.cafeName,
     required this.date,
     required this.monthYear,
     required this.rating,
-    required this.imageColor,
-    this.imagePath,
-    required this.icon,
+    required this.notes,
+    required this.imagePath,
   });
+
+  // Firestore document se MemoryEntry banao
+  // React mein API response transform karna jaisa
+  factory MemoryEntry.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    final timestamp = data['createdAt'] as Timestamp;
+    final date = timestamp.toDate();
+
+    final months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    return MemoryEntry(
+      id: doc.id,
+      itemName: data['itemName'] ?? '',
+      cafeName: data['cafeName'] ?? '',
+      date: '${months[date.month - 1]} ${date.day}, ${date.year}',
+      monthYear: '${months[date.month - 1].toUpperCase()} ${date.year}',
+      rating: data['rating'] ?? 0,
+      notes: data['notes'] ?? '',
+      imagePath: data['imagePath'] ?? '',
+    );
+  }
 }
 
-// Dummy data
-const List<MemoryEntry> memories = [
-  MemoryEntry(
-    itemName: 'Velvet Flat White',
-    cafeName: 'Brew & Bloom',
-    date: 'Oct 24, 2023',
-    monthYear: 'OCTOBER 2023',
-    rating: 4.0,
-    imageColor: '#8B6355',
-    imagePath: 'assets/images/howdy_burger1.jpg',
-    icon: Icons.coffee,
-  ),
-  MemoryEntry(
-    itemName: 'Almond Croissant',
-    cafeName: 'Artisan Pastry Lab',
-    date: 'Oct 18, 2023',
-    monthYear: 'OCTOBER 2023',
-    rating: 4.5,
-    imageColor: '#C4A882',
-    imagePath: 'assets/images/howdy_burger2.jpg',
-    icon: Icons.bakery_dining,
-  ),
-  MemoryEntry(
-    itemName: 'Iced Caramel Swirl',
-    cafeName: 'The Glass House',
-    date: 'Sep 30, 2023',
-    monthYear: 'SEPTEMBER 2023',
-    rating: 5.0,
-    imageColor: '#6B8B7A',
-    imagePath: 'assets/images/howdy_burger3.jpg',
-    icon: Icons.local_drink,
-  ),
-  MemoryEntry(
-    itemName: 'Son of a Bun',
-    cafeName: 'Howdy',
-    date: 'Sep 15, 2023',
-    monthYear: 'SEPTEMBER 2023',
-    rating: 4.5,
-    imageColor: '#8B2500',
-    imagePath: 'assets/images/howdy_cover.jpg',
-    icon: Icons.lunch_dining,
-  ),
-];
+const List<String> filters = ['All Memories', 'By Cafe', 'Price'];
 
 class TimelineScreen extends StatefulWidget {
   const TimelineScreen({super.key});
@@ -76,11 +70,9 @@ class TimelineScreen extends StatefulWidget {
 
 class _TimelineScreenState extends State<TimelineScreen> {
   int selectedFilter = 0;
-  final List<String> filters = ['All Memories', 'By Cafe', 'Price'];
 
   // Memories ko month ke hisaab se group karo
-  // yeh Map<String, List> hai — React mein reduce() jaisa
-  Map<String, List<MemoryEntry>> get groupedMemories {
+  Map<String, List<MemoryEntry>> _groupByMonth(List<MemoryEntry> memories) {
     final Map<String, List<MemoryEntry>> grouped = {};
     for (final memory in memories) {
       if (!grouped.containsKey(memory.monthYear)) {
@@ -93,8 +85,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final grouped = groupedMemories;
-    final months = grouped.keys.toList();
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F0E8),
@@ -109,7 +100,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                 children: [
                   const Icon(Icons.menu, color: Color(0xFF2D2D2D), size: 22),
                   const Text(
-                    'CafeMemory',
+                    'Flashback',
                     style: TextStyle(
                       color: Color(0xFF2D2D2D),
                       fontSize: 18,
@@ -136,7 +127,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
             const SizedBox(height: 16),
 
-            // Filter chips horizontal scroll
+            // Filter chips
             SizedBox(
               height: 36,
               child: ListView.builder(
@@ -176,7 +167,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          // By Cafe aur Price pe dropdown arrow
                           if (index != 0) ...[
                             const SizedBox(width: 4),
                             Icon(
@@ -197,44 +187,109 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
             const SizedBox(height: 8),
 
-            // Timeline list
+            // StreamBuilder — real time Firestore data
+            // React ka useEffect + useState jaisa but automatic
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
-                itemCount: months.length,
-                itemBuilder: (context, monthIndex) {
-                  final month = months[monthIndex];
-                  final monthMemories = grouped[month]!;
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Month header
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Text(
-                          month,
-                          style: const TextStyle(
-                            color: Color(0xFF4A5240),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('memories')
+                    .where('userId', isEqualTo: uid)
+                    .orderBy('createdAt', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  // Loading state
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF4A5240),
                       ),
+                    );
+                  }
 
-                      // Memories in this month
-                      ...monthMemories.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final memory = entry.value;
-                        final isLast = index == monthMemories.length - 1;
+                  // Error state
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Error: ${snapshot.error}',
+                        style: const TextStyle(color: Color(0xFF8B7355)),
+                      ),
+                    );
+                  }
 
-                        return _TimelineItem(
-                          memory: memory,
-                          isLast: isLast && monthIndex == months.length - 1,
-                        );
-                      }),
-                    ],
+                  // Empty state
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('☕', style: TextStyle(fontSize: 48)),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'No memories yet',
+                            style: TextStyle(
+                              color: Color(0xFF2D2D2D),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Visit a cafe and log your first memory!',
+                            style: TextStyle(
+                              color: Color(0xFF8B7355),
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  // Data aaya — convert aur group karo
+                  final memories = snapshot.data!.docs
+                      .map((doc) => MemoryEntry.fromFirestore(doc))
+                      .toList();
+
+                  final grouped = _groupByMonth(memories);
+                  final months = grouped.keys.toList();
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+                    itemCount: months.length,
+                    itemBuilder: (context, monthIndex) {
+                      final month = months[monthIndex];
+                      final monthMemories = grouped[month]!;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Month header
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: Text(
+                              month,
+                              style: const TextStyle(
+                                color: Color(0xFF4A5240),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                          ...monthMemories.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final memory = entry.value;
+                            final isLast =
+                                index == monthMemories.length - 1 &&
+                                monthIndex == months.length - 1;
+                            return _TimelineItem(
+                              memory: memory,
+                              isLast: isLast,
+                            );
+                          }),
+                        ],
+                      );
+                    },
                   );
                 },
               ),
@@ -243,7 +298,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
         ),
       ),
 
-      // FAB — pencil button
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: const Color(0xFFE8A0A0),
@@ -253,12 +307,29 @@ class _TimelineScreenState extends State<TimelineScreen> {
   }
 }
 
-// Timeline item — alag widget banaya reusability ke liye
 class _TimelineItem extends StatelessWidget {
   final MemoryEntry memory;
   final bool isLast;
 
   const _TimelineItem({required this.memory, required this.isLast});
+
+  IconData _getIcon() {
+    final name = memory.itemName.toLowerCase();
+    if (name.contains('coffee') ||
+        name.contains('latte') ||
+        name.contains('cappuccino') ||
+        name.contains('espresso')) {
+      return Icons.coffee;
+    } else if (name.contains('cake') ||
+        name.contains('pastry') ||
+        name.contains('croissant')) {
+      return Icons.cake_outlined;
+    } else if (name.contains('burger') || name.contains('sandwich')) {
+      return Icons.lunch_dining;
+    } else {
+      return Icons.restaurant;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -270,9 +341,7 @@ class _TimelineItem extends StatelessWidget {
           SizedBox(
             width: 40,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Icon circle
                 Container(
                   width: 32,
                   height: 32,
@@ -285,12 +354,11 @@ class _TimelineItem extends StatelessWidget {
                     ),
                   ),
                   child: Icon(
-                    memory.icon,
+                    _getIcon(),
                     size: 14,
                     color: const Color(0xFF8B7355),
                   ),
                 ),
-                // Vertical line — last item pe nahi
                 if (!isLast)
                   Expanded(
                     child: Container(
@@ -323,35 +391,19 @@ class _TimelineItem extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  // Food image
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: memory.imagePath != null
-                        ? Image.asset(
-                            memory.imagePath!,
-                            width: 64,
-                            height: 64,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                                  width: 64,
-                                  height: 64,
-                                  color: Color(
-                                    int.parse(
-                                      memory.imageColor.replaceAll('#', '0xFF'),
-                                    ),
-                                  ),
-                                ),
-                          )
-                        : Container(
-                            width: 64,
-                            height: 64,
-                            color: Color(
-                              int.parse(
-                                memory.imageColor.replaceAll('#', '0xFF'),
-                              ),
-                            ),
-                          ),
+                  // Image placeholder
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE8E0D0),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.restaurant,
+                      color: Color(0xFF8B7355),
+                      size: 24,
+                    ),
                   ),
 
                   const SizedBox(width: 12),
@@ -396,14 +448,11 @@ class _TimelineItem extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        // Stars
                         Row(
                           children: List.generate(5, (index) {
                             return Icon(
-                              index < memory.rating.floor()
+                              index < memory.rating
                                   ? Icons.star_rounded
-                                  : index < memory.rating
-                                  ? Icons.star_half_rounded
                                   : Icons.star_outline_rounded,
                               color: const Color(0xFFE8A838),
                               size: 14,
