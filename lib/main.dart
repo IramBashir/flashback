@@ -29,8 +29,11 @@ class FlashbackApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: const Color(0xFF111111),
       ),
-      home: const OnboardingScreen(),
-      routes: {'/home': (context) => const MainScreen()},
+      initialRoute: '/', // home ki jagah yeh use karo
+      routes: {
+        '/': (context) => const OnboardingScreen(),
+        '/home': (context) => const MainScreen(),
+      },
     );
   }
 }

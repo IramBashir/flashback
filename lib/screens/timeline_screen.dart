@@ -54,7 +54,7 @@ class MemoryEntry {
       monthYear: '${months[date.month - 1].toUpperCase()} ${date.year}',
       rating: data['rating'] ?? 0,
       notes: data['notes'] ?? '',
-      imagePath: data['imagePath'] ?? '',
+      imagePath: data['imageUrl'] ?? '',
     );
   }
 }
@@ -391,19 +391,43 @@ class _TimelineItem extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  // Image placeholder
-                  Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8E0D0),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.restaurant,
-                      color: Color(0xFF8B7355),
-                      size: 24,
-                    ),
+                  // Image
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: memory.imagePath.isNotEmpty
+                        ? Image.network(
+                            memory.imagePath,
+                            width: 64,
+                            height: 64,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  width: 64,
+                                  height: 64,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE8E0D0),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(
+                                    Icons.restaurant,
+                                    color: Color(0xFF8B7355),
+                                    size: 24,
+                                  ),
+                                ),
+                          )
+                        : Container(
+                            width: 64,
+                            height: 64,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE8E0D0),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.restaurant,
+                              color: Color(0xFF8B7355),
+                              size: 24,
+                            ),
+                          ),
                   ),
 
                   const SizedBox(width: 12),

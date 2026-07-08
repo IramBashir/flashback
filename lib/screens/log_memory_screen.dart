@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/cafe.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:typed_data';
 
 class LogMemoryScreen extends StatefulWidget {
   final CafeData cafe;
@@ -187,6 +188,21 @@ class _LogMemoryScreenState extends State<LogMemoryScreen> {
       final user = FirebaseAuth.instance.currentUser;
       final uid = user?.uid ?? 'anonymous';
 
+      String imageUrl = '';
+
+      // Agar image selected hai toh Storage pe upload karo
+      if (_selectedImage != null) {
+        final fileName = '${uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('memories')
+            .child(fileName);
+
+        // Web ke liye bytes upload karo
+        final bytes = await _selectedImage!.readAsBytes();
+        final uploadTask = await ref.putData(bytes);
+        imageUrl = await uploadTask.ref.getDownloadURL();
+      }
       // Firestore mein save karo
       await FirebaseFirestore.instance.collection('memories').add({
         'userId': uid,
@@ -195,7 +211,7 @@ class _LogMemoryScreenState extends State<LogMemoryScreen> {
         'price': priceController.text.trim(),
         'rating': selectedRating,
         'notes': notesController.text.trim(),
-        'imagePath': _selectedImage?.path ?? '',
+        'imageUrl': imageUrl,
         'createdAt': Timestamp.now(),
       });
 
@@ -312,9 +328,23 @@ class _LogMemoryScreenState extends State<LogMemoryScreen> {
                               ? Stack(
                                   fit: StackFit.expand,
                                   children: [
-                                    Image.file(
-                                      File(_selectedImage!.path),
-                                      fit: BoxFit.cover,
+                                    FutureBuilder<Uint8List>(
+                                      future: _selectedImage!.readAsBytes(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          return Image.memory(
+                                            snapshot.data!,
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: 180,
+                                          );
+                                        }
+                                        return const Center(
+                                          child: CircularProgressIndicator(
+                                            color: Color(0xFF8B7355),
+                                          ),
+                                        );
+                                      },
                                     ),
                                     // Change photo button
                                     Positioned(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'auth_screen.dart';
 import 'home_screen.dart';
+import '../main.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -48,10 +49,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _skipToHome() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MainNavigator()),
-    );
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
